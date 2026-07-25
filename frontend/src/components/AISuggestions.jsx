@@ -1,56 +1,81 @@
+
+
 import React from "react";
+import { FaRobot, FaArrowTrendUp, FaClock, FaHashtag } from "react-icons/fa6";
 
 const suggestions = [
   {
-    icon: "💡",
-    title: "Improve your content hooks",
+    icon: <FaArrowTrendUp />,
+    title: "Improve Engagement",
     description:
-      "Your first 3 seconds need stronger engagement."
+      "Use stronger opening hooks to increase audience retention.",
   },
   {
-    icon: "🚀",
-    title: "Post at peak audience time",
+    icon: <FaClock />,
+    title: "Best Posting Time",
     description:
-      "Best engagement detected between 6 PM - 9 PM."
+      "Post between 7 PM and 9 PM for maximum reach.",
   },
   {
-    icon: "🎯",
-    title: "Focus on short-form videos",
+    icon: <FaHashtag />,
+    title: "Trending Hashtags",
     description:
-      "Short videos are getting better reach."
-  }
+      "Use #AI #CreatorIQ #TechTips #Coding for better visibility.",
+  },
 ];
-
 
 const AISuggestions = () => {
   return (
-    <div className="bg-white rounded-xl shadow p-6 mt-6">
+    <div className="bg-white rounded-3xl shadow-lg border border-gray-100 p-8">
 
-      <h2 className="text-xl font-bold mb-5">
-        AI Suggestions
-      </h2>
+      {/* Header */}
 
+      <div className="flex items-center gap-4 mb-8">
 
-      <div className="grid md:grid-cols-3 gap-5">
+        <div className="w-14 h-14 rounded-2xl bg-gradient-to-r from-blue-600 to-purple-600 text-white flex items-center justify-center text-2xl">
+          <FaRobot />
+        </div>
+
+        <div>
+
+          <h2 className="text-2xl font-bold text-gray-800">
+            AI Suggestions
+          </h2>
+
+          <p className="text-gray-500">
+            Personalized recommendations to improve your content.
+          </p>
+
+        </div>
+
+      </div>
+
+      {/* Suggestions */}
+
+      <div className="space-y-5">
 
         {suggestions.map((item, index) => (
 
           <div
             key={index}
-            className="border rounded-lg p-5 hover:shadow-md transition"
+            className="flex gap-5 p-5 rounded-2xl bg-slate-50 hover:bg-blue-50 transition"
           >
 
-            <div className="text-3xl mb-3">
+            <div className="text-blue-600 text-2xl mt-1">
               {item.icon}
             </div>
 
-            <h3 className="font-semibold text-lg">
-              {item.title}
-            </h3>
+            <div>
 
-            <p className="text-gray-500 mt-2">
-              {item.description}
-            </p>
+              <h3 className="font-bold text-lg text-gray-800">
+                {item.title}
+              </h3>
+
+              <p className="text-gray-600 mt-1">
+                {item.description}
+              </p>
+
+            </div>
 
           </div>
 
@@ -61,6 +86,5 @@ const AISuggestions = () => {
     </div>
   );
 };
-
 
 export default AISuggestions;

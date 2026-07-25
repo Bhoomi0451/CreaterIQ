@@ -1,5 +1,9 @@
+
+
 import React from "react";
 import { Routes, Route } from "react-router-dom";
+
+import MainLayout from "../layouts/MainLayout";
 
 import Home from "../pages/Home";
 import Login from "../pages/Login";
@@ -8,57 +12,63 @@ import Dashboard from "../pages/Dashboard";
 import Upload from "../pages/Upload";
 import Profile from "../pages/Profile";
 import Analysis from "../pages/Analysis";
-
+import CreatorDNA from "../pages/CreatorDNA";
+import Brands from "../pages/Brands";
+import Settings from "../pages/Settings";
 
 const AppRoutes = () => {
   return (
     <Routes>
 
-      {/* Landing Page */}
-      <Route 
-        path="/" 
-        element={<Home />} 
-      />
+      {/* Public Pages */}
 
+      <Route path="/" element={<Home />} />
+      <Route path="/login" element={<Login />} />
+      <Route path="/signup" element={<Signup />} />
 
-      {/* Authentication */}
-      <Route 
-        path="/login" 
-        element={<Login />} 
-      />
+      {/* Protected Layout */}
 
-      <Route 
-        path="/signup" 
-        element={<Signup />} 
-      />
+      <Route element={<MainLayout />}>
 
+        <Route
+          path="/dashboard"
+          element={<Dashboard />}
+        />
 
-      {/* Dashboard */}
-      <Route 
-        path="/dashboard" 
-        element={<Dashboard />} 
-      />
+        <Route
+          path="/upload"
+          element={<Upload />}
+        />
 
+        <Route
+          path="/analysis"
+          element={<Analysis />}
+        />
 
-      {/* Upload Content */}
-      <Route 
-        path="/upload" 
-        element={<Upload />} 
-      />
+        <Route
+          path="/creator-dna"
+          element={<CreatorDNA />}
+        />
 
+        <Route
+          path="/brands"
+          element={<Brands />}
+        />
 
-      {/* Profile */}
-      <Route 
-        path="/profile" 
-        element={<Profile />} 
-      />
-      <Route
-  path="/analysis"
-  element={<Analysis />}
-/>
+        <Route
+          path="/profile"
+          element={<Profile />}
+        />
 
+        <Route
+          path="/settings"
+          element={<Settings />}
+        />
 
-      {/* 404 Page */}
+      </Route>
+
+      {/* 404 */}
+
       <Route
         path="*"
         element={
@@ -74,5 +84,7 @@ const AppRoutes = () => {
   );
 };
 
-
 export default AppRoutes;
+
+
+

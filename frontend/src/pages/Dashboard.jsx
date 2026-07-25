@@ -1,145 +1,104 @@
+
 import React from "react";
+import { motion } from "framer-motion";
+import {
+  FaStar,
+  FaFire,
+  FaHandshake,
+  FaFileAlt,
+} from "react-icons/fa";
+
+import StatCard from "../components/StatCard";
 import PerformanceChart from "../components/PerformanceChart";
 import AISuggestions from "../components/AISuggestions";
 import RecentAnalysis from "../components/RecentAnalysis";
 
 const Dashboard = () => {
   return (
-    <div className="min-h-screen flex bg-gray-100">
+    <motion.div
+      initial={{ opacity: 0, y: 20 }}
+      animate={{ opacity: 1, y: 0 }}
+      transition={{ duration: 0.5 }}
+      className="space-y-8"
+    >
+      {/* Hero Section */}
 
-      {/* Sidebar */}
-      <aside className="w-64 bg-gray-900 text-white min-h-screen p-6">
+      <div className="bg-gradient-to-r from-blue-600 via-indigo-600 to-purple-600 rounded-3xl p-8 text-white shadow-xl">
 
-        <h1 className="text-2xl font-bold mb-8">
-          CreatorIQ
-        </h1>
-
-        <nav className="space-y-5">
-
-          <a className="block hover:text-blue-400 cursor-pointer">
-            Dashboard
-          </a>
-
-          <a className="block hover:text-blue-400 cursor-pointer">
-            Analytics
-          </a>
-
-          <a className="block hover:text-blue-400 cursor-pointer">
-            AI Suggestions
-          </a>
-
-          <a className="block hover:text-blue-400 cursor-pointer">
-            Reports
-          </a>
-
-          <a className="block hover:text-blue-400 cursor-pointer">
-            Settings
-          </a>
-
-        </nav>
-
-      </aside>
-
-
-      {/* Main Content */}
-      <main className="flex-1 p-8">
-
-        {/* Topbar */}
-        <div className="flex justify-between items-center mb-8">
+        <div className="flex flex-col lg:flex-row justify-between items-center">
 
           <div>
-            <h2 className="text-3xl font-bold">
-              Dashboard
-            </h2>
 
-            <p className="text-gray-500">
-              Welcome back 👋 Track your creator growth.
+            <h1 className="text-4xl font-bold">
+              Dashboard 📊
+            </h1>
+
+            <p className="mt-3 text-blue-100 text-lg max-w-2xl">
+              Welcome back! Monitor your creator growth,
+              AI insights, engagement, and brand opportunities
+              all in one place.
             </p>
-          </div>
-
-
-          <div className="flex items-center gap-4">
-
-            <button className="bg-blue-600 text-white px-4 py-2 rounded-lg">
-              Upload Content
-            </button>
-
-            <div className="w-10 h-10 bg-gray-300 rounded-full flex items-center justify-center">
-              A
-            </div>
 
           </div>
+
+          <button className="mt-6 lg:mt-0 bg-white text-blue-600 px-6 py-3 rounded-xl font-semibold hover:scale-105 transition">
+            View Reports
+          </button>
 
         </div>
 
+      </div>
 
+      {/* Statistics */}
 
-        {/* Stats Cards */}
-        <div className="grid grid-cols-1 md:grid-cols-4 gap-6">
+      <div className="grid grid-cols-1 sm:grid-cols-2 xl:grid-cols-4 gap-6">
 
+        <StatCard
+          title="Creator Score"
+          value="92"
+          icon={<FaStar />}
+          color="bg-blue-600"
+        />
 
-          <div className="bg-white rounded-xl shadow p-6">
-            <h3 className="text-gray-500">
-              Creator Score
-            </h3>
+        <StatCard
+          title="Virality Score"
+          value="84%"
+          icon={<FaFire />}
+          color="bg-orange-500"
+        />
 
-            <p className="text-3xl font-bold mt-2">
-              85
-            </p>
-          </div>
+        <StatCard
+          title="Brand Matches"
+          value="18"
+          icon={<FaHandshake />}
+          color="bg-green-600"
+        />
 
+        <StatCard
+          title="AI Reports"
+          value="36"
+          icon={<FaFileAlt />}
+          color="bg-purple-600"
+        />
 
+      </div>
 
-          <div className="bg-white rounded-xl shadow p-6">
-            <h3 className="text-gray-500">
-              Virality Score
-            </h3>
+      {/* Chart */}
 
-            <p className="text-3xl font-bold mt-2">
-              78%
-            </p>
-          </div>
+      <PerformanceChart />
 
+      {/* Bottom Cards */}
 
+      <div className="grid lg:grid-cols-2 gap-8">
 
-          <div className="bg-white rounded-xl shadow p-6">
-            <h3 className="text-gray-500">
-              Brand Matches
-            </h3>
-
-            <p className="text-3xl font-bold mt-2">
-              12
-            </p>
-          </div>
-
-
-
-          <div className="bg-white rounded-xl shadow p-6">
-            <h3 className="text-gray-500">
-              Reports
-            </h3>
-
-            <p className="text-3xl font-bold mt-2">
-              25
-            </p>
-          </div>
-
-
-        </div>
-
-
-
-        {/* Performance Chart */}
-        <PerformanceChart />
         <AISuggestions />
+
         <RecentAnalysis />
 
+      </div>
 
-      </main>
-
-    </div>
+    </motion.div>
   );
 };
-
 
 export default Dashboard;
