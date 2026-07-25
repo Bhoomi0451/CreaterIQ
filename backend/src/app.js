@@ -6,6 +6,7 @@ import morgan from 'morgan';
 import AppError from './utils/appError.js';
 import globalErrorHandler from './middleware/errorMiddleware.js';
 import authRoutes from './routes/authRoutes.js';
+import uploadRoutes from './routes/uploadRoutes.js';
 
 // Initialize Express App
 const app = express();
@@ -41,6 +42,9 @@ app.get('/api/v1/health', (req, res) => {
 
 // Register Authentication Routes
 app.use('/api/auth', authRoutes);
+
+// Register Upload Routes
+app.use('/api/uploads', uploadRoutes);
 
 // Future Route Registrations Placeholders
 // TODO: app.use('/api/v1/creators', creatorsRouter);
