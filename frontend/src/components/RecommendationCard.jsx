@@ -6,7 +6,7 @@ import {
   FaArrowTrendUp,
 } from "react-icons/fa6";
 
-const recommendations = [
+const defaultRecommendations = [
   {
     title: "Improve Engagement",
     description: "Use a stronger hook within the first 3 seconds of your content.",
@@ -27,7 +27,21 @@ const recommendations = [
   },
 ];
 
-const RecommendationCard = () => {
+const RecommendationCard = ({ suggestions = [] }) => {
+  const displayRecommendations = suggestions.length > 0
+    ? suggestions.map((text, idx) => {
+        const icons = [<FaArrowTrendUp />, <FaClock />, <FaHashtag />, <FaLightbulb />];
+        const priorities = ["High", "Medium", "Low"];
+        const titles = ["Content Strategy", "Posting & Schedule", "Optimization Technique", "Engagement Focus"];
+        return {
+          title: titles[idx % titles.length],
+          description: text,
+          icon: icons[idx % icons.length],
+          priority: priorities[idx % priorities.length],
+        };
+      })
+    : defaultRecommendations;
+
   return (
     <div className="bg-white rounded-2xl shadow-md border border-gray-100 p-8">
 
@@ -55,7 +69,7 @@ const RecommendationCard = () => {
 
       <div className="space-y-5">
 
-        {recommendations.map((item, index) => (
+        {displayRecommendations.map((item, index) => (
 
           <div
             key={index}

@@ -37,6 +37,14 @@ const userSchema = new mongoose.Schema(
       type: String,
       default: '',
     },
+    phone: {
+      type: String,
+      default: '',
+    },
+    country: {
+      type: String,
+      default: '',
+    },
     socialLinks: {
       instagram: {
         type: String,
@@ -51,6 +59,14 @@ const userSchema = new mongoose.Schema(
         default: '',
       },
       twitter: {
+        type: String,
+        default: '',
+      },
+      linkedin: {
+        type: String,
+        default: '',
+      },
+      website: {
         type: String,
         default: '',
       },

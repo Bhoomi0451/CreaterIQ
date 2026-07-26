@@ -1,9 +1,11 @@
 import React, { useState } from "react";
 import { Link, useNavigate } from "react-router-dom";
 import { FaUser, FaEnvelope, FaLock } from "react-icons/fa";
+import { useAuth } from "../context/AuthContext";
 
 const Signup = () => {
   const navigate = useNavigate();
+  const { signup } = useAuth();
 
   const [form, setForm] = useState({
     name: "",
@@ -11,6 +13,8 @@ const Signup = () => {
     password: "",
     confirmPassword: "",
   });
+  const [loading, setLoading] = useState(false);
+  const [error, setError] = useState("");
 
   const handleChange = (e) => {
     setForm({
@@ -19,8 +23,9 @@ const Signup = () => {
     });
   };
 
-  const handleSubmit = (e) => {
+  const handleSubmit = async (e) => {
     e.preventDefault();
+    setError("");
 
     if (
       !form.name ||
@@ -28,18 +33,24 @@ const Signup = () => {
       !form.password ||
       !form.confirmPassword
     ) {
-      alert("Please fill all fields");
+      setError("Please fill all fields");
       return;
     }
 
     if (form.password !== form.confirmPassword) {
-      alert("Passwords do not match");
+      setError("Passwords do not match");
       return;
     }
 
-    alert("Signup Successful! (Frontend Demo)");
+    setLoading(true);
+    const result = await signup(form.name, form.email, form.password);
+    setLoading(false);
 
-    navigate("/dashboard");
+    if (result.success) {
+      navigate("/dashboard");
+    } else {
+      setError(result.error);
+    }
   };
 
   return (
@@ -51,9 +62,15 @@ const Signup = () => {
           CreatorIQ
         </h1>
 
-        <p className="text-center text-gray-500 mb-8">
+        <p className="text-center text-gray-500 mb-6">
           Create your account
         </p>
+
+        {error && (
+          <div className="bg-red-50 border-l-4 border-red-500 text-red-700 p-4 rounded-xl mb-6 text-sm font-medium">
+            ⚠️ {error}
+          </div>
+        )}
 
         <form onSubmit={handleSubmit} className="space-y-5">
 
@@ -66,6 +83,7 @@ const Signup = () => {
               value={form.name}
               onChange={handleChange}
               className="w-full border rounded-xl py-3 pl-12 pr-4 focus:ring-2 focus:ring-blue-500 outline-none"
+              disabled={loading}
             />
           </div>
 
@@ -78,6 +96,7 @@ const Signup = () => {
               value={form.email}
               onChange={handleChange}
               className="w-full border rounded-xl py-3 pl-12 pr-4 focus:ring-2 focus:ring-blue-500 outline-none"
+              disabled={loading}
             />
           </div>
 
@@ -90,6 +109,7 @@ const Signup = () => {
               value={form.password}
               onChange={handleChange}
               className="w-full border rounded-xl py-3 pl-12 pr-4 focus:ring-2 focus:ring-blue-500 outline-none"
+              disabled={loading}
             />
           </div>
 
@@ -102,14 +122,16 @@ const Signup = () => {
               value={form.confirmPassword}
               onChange={handleChange}
               className="w-full border rounded-xl py-3 pl-12 pr-4 focus:ring-2 focus:ring-blue-500 outline-none"
+              disabled={loading}
             />
           </div>
 
           <button
             type="submit"
-            className="w-full bg-blue-600 hover:bg-blue-700 text-white py-3 rounded-xl font-semibold transition"
+            disabled={loading}
+            className="w-full bg-blue-600 hover:bg-blue-700 text-white py-3 rounded-xl font-semibold transition disabled:opacity-50 cursor-pointer"
           >
-            Sign Up
+            {loading ? "Creating Account..." : "Sign Up"}
           </button>
 
         </form>

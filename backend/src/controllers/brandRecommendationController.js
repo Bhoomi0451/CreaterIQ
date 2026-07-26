@@ -1,4 +1,5 @@
 import brandRecommendationService from '../services/brandRecommendationService.js';
+import { createNotification } from '../services/notificationService.js';
 
 /**
  * Trigger AI brand recommendations matchmaking.
@@ -8,6 +9,9 @@ export const generateBrands = async (req, res, next) => {
   try {
     const userId = req.user.id;
     const brands = await brandRecommendationService.generateBrandRecommendations(userId);
+
+    // Trigger brand recommendations generated notification
+    await createNotification(userId, 'recommendation', 'Brand matches generated successfully.');
 
     res.status(200).json({
       status: 'success',

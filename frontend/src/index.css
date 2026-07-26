@@ -5,6 +5,127 @@
 body {
   margin: 0;
   font-family: Arial, Helvetica, sans-serif;
+  transition: background-color 0.3s ease, color 0.3s ease;
+}
+
+/* Global Dark Mode CSS Overrides */
+body.dark {
+  background: linear-gradient(to bottom right, #0f172a, #1e1b4b, #111827) !important;
+  background-color: #0f172a !important;
+  color: #f8fafc !important;
+}
+
+/* Override background gradient wrapper on MainLayout */
+body.dark .bg-gradient-to-br {
+  background-image: linear-gradient(to bottom right, #0f172a, #1e1b4b, #111827) !important;
+}
+
+/* Cards & Tables Containers */
+body.dark .bg-white,
+body.dark .bg-slate-900.text-white {
+  background-color: #1e293b !important;
+  color: #f1f5f9 !important;
+  border-color: #334155 !important;
+  box-shadow: 0 4px 6px -1px rgb(0 0 0 / 0.3), 0 2px 4px -2px rgb(0 0 0 / 0.3) !important;
+}
+
+/* Muted light boxes */
+body.dark .bg-slate-50,
+body.dark .bg-blue-50,
+body.dark .bg-purple-50,
+body.dark .bg-indigo-50,
+body.dark .bg-green-50,
+body.dark .bg-red-50,
+body.dark .bg-orange-50 {
+  background-color: #334155 !important;
+  color: #f1f5f9 !important;
+}
+
+/* Hover highlights */
+body.dark .hover\:bg-gray-50:hover,
+body.dark .hover\:bg-blue-50:hover,
+body.dark .hover\:bg-slate-50:hover {
+  background-color: #475569 !important;
+}
+
+/* Inputs & Form Fields */
+body.dark input,
+body.dark select,
+body.dark textarea {
+  background-color: #0f172a !important;
+  color: #ffffff !important;
+  border-color: #475569 !important;
+}
+
+body.dark input::placeholder,
+body.dark textarea::placeholder {
+  color: #64748b !important;
+}
+
+/* Typography Overrides */
+body.dark .text-gray-900,
+body.dark .text-gray-800,
+body.dark .text-slate-800 {
+  color: #f8fafc !important;
+}
+
+body.dark .text-gray-700,
+body.dark .text-gray-600,
+body.dark .text-slate-700,
+body.dark .text-slate-600 {
+  color: #cbd5e1 !important;
+}
+
+body.dark .text-gray-500,
+body.dark .text-slate-500 {
+  color: #94a3b8 !important;
+}
+
+body.dark .text-gray-400 {
+  color: #64748b !important;
+}
+
+body.dark .text-blue-600 {
+  color: #60a5fa !important;
+}
+
+/* Sidebar Specific */
+body.dark aside {
+  background-color: #090d16 !important;
+  border-right: 1px solid #1e293b !important;
+}
+
+body.dark aside .text-slate-300:hover {
+  background-color: #1e293b !important;
+  color: #ffffff !important;
+}
+
+body.dark aside .bg-blue-600 {
+  background-color: #3b82f6 !important;
+}
+
+/* Topbar Specific */
+body.dark header {
+  background-color: #0f172a !important;
+  border-bottom: 1px solid #1e293b !important;
+}
+
+body.dark header .bg-gray-100 {
+  background-color: #1e293b !important;
+}
+
+/* Table borders & lines */
+body.dark tr,
+body.dark td,
+body.dark th,
+body.dark .border,
+body.dark .border-b,
+body.dark .border-t,
+body.dark .border-gray-100,
+body.dark .border-gray-200,
+body.dark .border-gray-300,
+body.dark .border-slate-700 {
+  border-color: #334155 !important;
 }
 
 

@@ -1,4 +1,5 @@
 import creatorDNAService from '../services/creatorDNAService.js';
+import { createNotification } from '../services/notificationService.js';
 
 /**
  * Trigger AI Creator DNA synthesis.
@@ -8,6 +9,9 @@ export const generateDNA = async (req, res, next) => {
   try {
     const userId = req.user.id;
     const creatorDNA = await creatorDNAService.generateCreatorDNA(userId);
+
+    // Trigger CreatorDNA generated notification
+    await createNotification(userId, 'dna', 'Creator DNA profile synthesized successfully.');
 
     res.status(200).json({
       status: 'success',

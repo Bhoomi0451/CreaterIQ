@@ -10,16 +10,15 @@ import {
   CartesianGrid,
 } from "recharts";
 
-const data = [
-  { month: "Jan", score: 45 },
-  { month: "Feb", score: 58 },
-  { month: "Mar", score: 72 },
-  { month: "Apr", score: 80 },
-  { month: "May", score: 91 },
-  { month: "Jun", score: 95 },
-];
+const PerformanceChart = ({ data = [] }) => {
+  const defaultData = [
+    { name: "Upload 1", score: 0 },
+    { name: "Upload 2", score: 0 },
+    { name: "Upload 3", score: 0 },
+  ];
 
-const PerformanceChart = () => {
+  const chartData = data.length > 0 ? data : defaultData;
+
   return (
     <div className="bg-white rounded-3xl shadow-lg border border-gray-100 p-8">
 
@@ -32,25 +31,27 @@ const PerformanceChart = () => {
           </h2>
 
           <p className="text-gray-500 mt-1">
-            Monthly AI performance score
+            Historical AI performance score
           </p>
 
         </div>
 
-        <span className="bg-blue-100 text-blue-600 px-4 py-2 rounded-full font-semibold">
-          +18%
-        </span>
+        {data.length > 0 && (
+          <span className="bg-blue-100 text-blue-600 px-4 py-2 rounded-full font-semibold">
+            Dynamic
+          </span>
+        )}
 
       </div>
 
       <ResponsiveContainer width="100%" height={350}>
-        <LineChart data={data}>
+        <LineChart data={chartData}>
 
           <CartesianGrid strokeDasharray="3 3" />
 
-          <XAxis dataKey="month" />
+          <XAxis dataKey="name" />
 
-          <YAxis />
+          <YAxis domain={[0, 100]} />
 
           <Tooltip />
 

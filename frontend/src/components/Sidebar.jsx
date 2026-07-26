@@ -1,5 +1,6 @@
 
 
+import React, { useState, useEffect } from "react";
 import { NavLink } from "react-router-dom";
 import {
   FaHome,
@@ -10,9 +11,37 @@ import {
   FaHandshake,
   FaUser,
   FaCog,
+  FaSignOutAlt,
 } from "react-icons/fa";
+import { useAuth } from "../context/AuthContext";
+import api from "../services/api";
 
 function Sidebar() {
+  const { logout } = useAuth();
+  const [avgScore, setAvgScore] = useState(0);
+
+  useEffect(() => {
+    const fetchScore = async () => {
+      try {
+        const response = await api.get('/api/dashboard');
+        if (response.data?.status === 'success') {
+          setAvgScore(response.data.data.stats?.avgOverallScore || 0);
+        }
+      } catch (err) {
+        console.error("Error fetching score in sidebar:", err);
+      }
+    };
+    fetchScore();
+  }, []);
+
+  const getPerformanceMessage = (score) => {
+    if (score >= 90) return "Excellent Performance 🚀";
+    if (score >= 80) return "Good Performance 👍";
+    if (score >= 70) return "Average Performance 📈";
+    if (score > 0) return "Needs Improvement 💪";
+    return "No analyses yet 🚀";
+  };
+
   const menuItems = [
     { name: "Dashboard", path: "/dashboard", icon: <FaChartLine /> },
     { name: "Upload", path: "/upload", icon: <FaUpload /> },
@@ -62,6 +91,15 @@ function Sidebar() {
             </NavLink>
           ))}
 
+          {/* Logout Button */}
+          <button
+            onClick={logout}
+            className="w-full flex items-center gap-4 px-4 py-3 rounded-xl transition-all duration-300 text-slate-300 hover:bg-red-950 hover:text-red-400 cursor-pointer text-left font-medium"
+          >
+            <span className="text-lg"><FaSignOutAlt /></span>
+            <span>Logout</span>
+          </button>
+
         </nav>
 
       </div>
@@ -76,11 +114,11 @@ function Sidebar() {
           </p>
 
           <h2 className="text-4xl font-bold mt-2">
-            92
+            {avgScore > 0 ? avgScore : "--"}
           </h2>
 
           <p className="mt-3 text-sm text-blue-100">
-            Excellent Performance 🚀
+            {getPerformanceMessage(avgScore)}
           </p>
 
         </div>

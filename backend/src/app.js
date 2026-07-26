@@ -11,6 +11,7 @@ import analysisRoutes from './routes/analysisRoutes.js';
 import creatorDNARoutes from './routes/creatorDNARoutes.js';
 import brandRecommendationRoutes from './routes/brandRecommendationRoutes.js';
 import dashboardRoutes from './routes/dashboardRoutes.js';
+import notificationRoutes from './routes/notificationRoutes.js';
 
 // Initialize Express App
 const app = express();
@@ -61,6 +62,9 @@ app.use('/api/brands', brandRecommendationRoutes);
 
 // Register Dashboard Routes
 app.use('/api/dashboard', dashboardRoutes);
+
+// Register Notifications Routes
+app.use('/api/notifications', notificationRoutes);
 
 // Future Route Registrations Placeholders
 // TODO: app.use('/api/v1/creators', creatorsRouter);

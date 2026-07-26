@@ -1,9 +1,9 @@
 
 
 import React from "react";
-import { FaRobot, FaArrowTrendUp, FaClock, FaHashtag } from "react-icons/fa6";
+import { FaRobot, FaArrowTrendUp, FaClock, FaHashtag, FaLightbulb } from "react-icons/fa6";
 
-const suggestions = [
+const defaultSuggestions = [
   {
     icon: <FaArrowTrendUp />,
     title: "Improve Engagement",
@@ -24,7 +24,18 @@ const suggestions = [
   },
 ];
 
-const AISuggestions = () => {
+const AISuggestions = ({ suggestions = [] }) => {
+  const displaySuggestions = suggestions.map((text, idx) => {
+    // Map string array elements from backend to suggestion object structure
+    const icons = [<FaLightbulb />, <FaArrowTrendUp />, <FaClock />, <FaHashtag />];
+    const titles = ["Content Refinement", "Hook optimization", "Audience Hook", "Creator Advice"];
+    return {
+      icon: icons[idx % icons.length],
+      title: titles[idx % titles.length],
+      description: text
+    };
+  });
+
   return (
     <div className="bg-white rounded-3xl shadow-lg border border-gray-100 p-8">
 
@@ -54,32 +65,30 @@ const AISuggestions = () => {
 
       <div className="space-y-5">
 
-        {suggestions.map((item, index) => (
-
-          <div
-            key={index}
-            className="flex gap-5 p-5 rounded-2xl bg-slate-50 hover:bg-blue-50 transition"
-          >
-
-            <div className="text-blue-600 text-2xl mt-1">
-              {item.icon}
-            </div>
-
-            <div>
-
-              <h3 className="font-bold text-lg text-gray-800">
-                {item.title}
-              </h3>
-
-              <p className="text-gray-600 mt-1">
-                {item.description}
-              </p>
-
-            </div>
-
+        {displaySuggestions.length === 0 ? (
+          <div className="text-center py-8 text-gray-500 bg-slate-50 rounded-2xl p-5 border border-dashed border-gray-200">
+            💡 No suggestions generated yet. Upload content and complete AI analysis to receive tailored tips.
           </div>
-
-        ))}
+        ) : (
+          displaySuggestions.map((item, index) => (
+            <div
+              key={index}
+              className="flex gap-5 p-5 rounded-2xl bg-slate-50 hover:bg-blue-50 transition"
+            >
+              <div className="text-blue-600 text-2xl mt-1">
+                {item.icon}
+              </div>
+              <div>
+                <h3 className="font-bold text-lg text-gray-800">
+                  {item.title}
+                </h3>
+                <p className="text-gray-600 mt-1">
+                  {item.description}
+                </p>
+              </div>
+            </div>
+          ))
+        )}
 
       </div>
 

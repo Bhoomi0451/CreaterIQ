@@ -2,25 +2,36 @@
 import React, { useState } from "react";
 import { Link, useNavigate } from "react-router-dom";
 import { FaEnvelope, FaLock, FaEye, FaEyeSlash, FaRobot } from "react-icons/fa";
+import { useAuth } from "../context/AuthContext";
 
 const Login = () => {
   const navigate = useNavigate();
+  const { login } = useAuth();
 
   const [showPassword, setShowPassword] = useState(false);
-
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
+  const [loading, setLoading] = useState(false);
+  const [error, setError] = useState("");
 
-  const handleSubmit = (e) => {
+  const handleSubmit = async (e) => {
     e.preventDefault();
+    setError("");
 
     if (!email || !password) {
-      alert("Please fill all fields");
+      setError("Please fill all fields");
       return;
     }
 
-    alert("Login Successful!");
-    navigate("/dashboard");
+    setLoading(true);
+    const result = await login(email, password);
+    setLoading(false);
+
+    if (result.success) {
+      navigate("/dashboard");
+    } else {
+      setError(result.error);
+    }
   };
 
   return (
@@ -53,7 +64,7 @@ const Login = () => {
 
         {/* Right */}
 
-        <div className="p-10">
+        <div className="p-10 flex flex-col justify-center">
 
           <h2 className="text-4xl font-bold text-gray-800">
             Welcome Back 👋
@@ -62,6 +73,12 @@ const Login = () => {
           <p className="text-gray-500 mt-2">
             Login to your account
           </p>
+
+          {error && (
+            <div className="bg-red-50 border-l-4 border-red-500 text-red-700 p-4 rounded-xl mt-4 text-sm font-medium">
+              ⚠️ {error}
+            </div>
+          )}
 
           <form onSubmit={handleSubmit} className="mt-8 space-y-5">
 
@@ -75,6 +92,7 @@ const Login = () => {
                 value={email}
                 onChange={(e)=>setEmail(e.target.value)}
                 className="w-full border rounded-xl py-3 pl-12 pr-4 focus:ring-2 focus:ring-blue-500 outline-none"
+                disabled={loading}
               />
 
             </div>
@@ -89,12 +107,14 @@ const Login = () => {
                 value={password}
                 onChange={(e)=>setPassword(e.target.value)}
                 className="w-full border rounded-xl py-3 pl-12 pr-12 focus:ring-2 focus:ring-blue-500 outline-none"
+                disabled={loading}
               />
 
               <button
                 type="button"
                 onClick={()=>setShowPassword(!showPassword)}
-                className="absolute right-4 top-4"
+                className="absolute right-4 top-4 text-gray-400 hover:text-gray-600"
+                disabled={loading}
               >
                 {showPassword ? <FaEyeSlash/> : <FaEye/>}
               </button>
@@ -103,9 +123,10 @@ const Login = () => {
 
             <button
               type="submit"
-              className="w-full bg-blue-600 hover:bg-blue-700 text-white py-3 rounded-xl font-semibold transition"
+              disabled={loading}
+              className="w-full bg-blue-600 hover:bg-blue-700 text-white py-3 rounded-xl font-semibold transition disabled:opacity-50 cursor-pointer"
             >
-              Login
+              {loading ? "Logging in..." : "Login"}
             </button>
 
           </form>
@@ -116,7 +137,7 @@ const Login = () => {
 
             <Link
               to="/signup"
-              className="text-blue-600 font-semibold ml-2"
+              className="text-blue-600 font-semibold ml-2 hover:underline"
             >
               Sign Up
             </Link>

@@ -3,33 +3,60 @@ import {
   FaInstagram,
   FaYoutube,
   FaTiktok,
+  FaSpotify,
+  FaLinkedin,
+  FaBriefcase,
+  FaGlobe,
 } from "react-icons/fa";
 
-const platforms = [
-  {
-    name: "Instagram Reels",
-    score: 92,
-    icon: <FaInstagram className="text-pink-500 text-2xl" />,
-    color: "bg-pink-500",
-    status: "Excellent",
-  },
-  {
-    name: "YouTube Shorts",
-    score: 86,
-    icon: <FaYoutube className="text-red-600 text-2xl" />,
-    color: "bg-red-500",
-    status: "Good",
-  },
-  {
-    name: "TikTok",
-    score: 78,
-    icon: <FaTiktok className="text-black text-2xl" />,
-    color: "bg-black",
-    status: "Average",
-  },
-];
+const PlatformChart = ({ platforms = [], score = 80 }) => {
+  const getPlatformDetails = (name, index) => {
+    const n = name.toLowerCase();
+    let icon = <FaGlobe className="text-indigo-500 text-2xl" />;
+    let color = "bg-indigo-500";
+    
+    if (n.includes("instagram") || n.includes("reel")) {
+      icon = <FaInstagram className="text-pink-500 text-2xl" />;
+      color = "bg-pink-500";
+    } else if (n.includes("youtube") || n.includes("short")) {
+      icon = <FaYoutube className="text-red-600 text-2xl" />;
+      color = "bg-red-500";
+    } else if (n.includes("tiktok")) {
+      icon = <FaTiktok className="text-black text-2xl" />;
+      color = "bg-black";
+    } else if (n.includes("spotify") || n.includes("podcast") || n.includes("audio")) {
+      icon = <FaSpotify className="text-green-500 text-2xl" />;
+      color = "bg-green-500";
+    } else if (n.includes("linkedin")) {
+      icon = <FaLinkedin className="text-blue-700 text-2xl" />;
+      color = "bg-blue-700";
+    } else if (n.includes("blog") || n.includes("script") || n.includes("article") || n.includes("write")) {
+      icon = <FaBriefcase className="text-orange-500 text-2xl" />;
+      color = "bg-orange-500";
+    }
 
-const PlatformChart = () => {
+    // Offset scores slightly for dynamic presentation
+    const platformScore = Math.max(10, Math.min(100, score + (1 - index) * 4));
+    
+    let status = "Average";
+    if (platformScore >= 90) status = "Excellent";
+    else if (platformScore >= 80) status = "Good";
+    else if (platformScore >= 70) status = "Average";
+    else status = "Needs Work";
+
+    return {
+      name,
+      score: platformScore,
+      icon,
+      color,
+      status,
+    };
+  };
+
+  const defaultPlatforms = ["Instagram Reels", "YouTube Shorts", "TikTok"];
+  const platformsList = platforms.length > 0 ? platforms : defaultPlatforms;
+  const displayPlatforms = platformsList.map((p, idx) => getPlatformDetails(p, idx));
+
   return (
     <div className="bg-white rounded-2xl shadow-md border border-gray-100 p-8">
 
@@ -49,7 +76,7 @@ const PlatformChart = () => {
 
       <div className="space-y-8">
 
-        {platforms.map((platform, index) => (
+        {displayPlatforms.map((platform, index) => (
 
           <div key={index}>
 

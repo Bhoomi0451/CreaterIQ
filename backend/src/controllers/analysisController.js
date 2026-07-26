@@ -1,6 +1,8 @@
 import mongoose from 'mongoose';
 import analysisService from '../services/analysisService.js';
 import AppError from '../utils/appError.js';
+import Upload from '../models/Upload.js';
+import { createNotification } from '../services/notificationService.js';
 
 /**
  * Trigger AI content analysis for an upload.
@@ -17,6 +19,13 @@ export const triggerAnalysis = async (req, res, next) => {
     }
 
     const analysis = await analysisService.analyzeUpload(uploadId, userId);
+
+    // Fetch upload title for notification
+    const upload = await Upload.findById(uploadId);
+    const title = upload ? upload.title : 'Content';
+
+    // Trigger analysis completed notification
+    await createNotification(userId, 'analysis', `AI content report generated for "${title}".`);
 
     res.status(200).json({
       status: 'success',
