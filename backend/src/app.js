@@ -7,6 +7,10 @@ import AppError from './utils/appError.js';
 import globalErrorHandler from './middleware/errorMiddleware.js';
 import authRoutes from './routes/authRoutes.js';
 import uploadRoutes from './routes/uploadRoutes.js';
+import analysisRoutes from './routes/analysisRoutes.js';
+import creatorDNARoutes from './routes/creatorDNARoutes.js';
+import brandRecommendationRoutes from './routes/brandRecommendationRoutes.js';
+import dashboardRoutes from './routes/dashboardRoutes.js';
 
 // Initialize Express App
 const app = express();
@@ -45,6 +49,18 @@ app.use('/api/auth', authRoutes);
 
 // Register Upload Routes
 app.use('/api/uploads', uploadRoutes);
+
+// Register Analysis Routes
+app.use('/api/analysis', analysisRoutes);
+
+// Register Creator DNA Routes
+app.use('/api/creator-dna', creatorDNARoutes);
+
+// Register Brand Recommendation Routes
+app.use('/api/brands', brandRecommendationRoutes);
+
+// Register Dashboard Routes
+app.use('/api/dashboard', dashboardRoutes);
 
 // Future Route Registrations Placeholders
 // TODO: app.use('/api/v1/creators', creatorsRouter);
