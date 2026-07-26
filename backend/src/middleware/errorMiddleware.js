@@ -12,7 +12,16 @@ const handleCastErrorDB = (err) => {
  * Translates MongoDB duplicate key error (code 11000) to an operational AppError
  */
 const handleDuplicateFieldsDB = (err) => {
-  const value = err.errmsg.match(/(["'])(\\?.)*?\1/)[0];
+  let value = '';
+  if (err.keyValue) {
+    value = JSON.stringify(err.keyValue);
+  } else if (err.errmsg) {
+    const match = err.errmsg.match(/(["'])(\\?.)*?\1/);
+    value = match ? match[0] : '';
+  } else if (err.message) {
+    const match = err.message.match(/(["'])(\\?.)*?\1/);
+    value = match ? match[0] : '';
+  }
   const message = `Duplicate field value: ${value}. Please use another value!`;
   return new AppError(message, 400);
 };

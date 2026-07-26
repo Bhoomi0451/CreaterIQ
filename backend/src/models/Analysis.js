@@ -15,6 +15,12 @@ const analysisSchema = new mongoose.Schema(
       max: [100, 'Score cannot exceed 100'],
       default: 0,
     },
+    overallScore: {
+      type: Number,
+      min: [0, 'Score cannot be less than 0'],
+      max: [100, 'Score cannot exceed 100'],
+      default: 0,
+    },
     storytellingScore: {
       type: Number,
       min: [0, 'Score cannot be less than 0'],
