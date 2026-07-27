@@ -11,38 +11,56 @@ process.on('uncaughtException', (err) => {
   process.exit(1);
 });
 
-// 2) DATABASE CONNECTION
-connectDB();
+let server;
 
-// 3) START SERVER
-const PORT = process.env.PORT || 5000;
-const server = app.listen(PORT, () => {
-  console.log(`[Server] Listening on Port ${PORT} in ${process.env.NODE_ENV} mode`);
-});
+// 2) DATABASE CONNECTION AND SERVER STARTUP
+// Do not accept requests until MongoDB is available. This makes startup
+// failures deterministic instead of allowing the app to crash later.
+const startServer = async () => {
+  try {
+    await connectDB();
+
+    const PORT = process.env.PORT || 5000;
+    server = app.listen(PORT, () => {
+      console.log(`[Server] Listening on Port ${PORT} in ${process.env.NODE_ENV || 'production'} mode`);
+    });
+  } catch (error) {
+    console.error('[CRITICAL] Database connection failed. Server was not started.');
+    process.exit(1);
+  }
+};
+
+startServer();
 
 // 4) HANDLE UNHANDLED REJECTIONS
 // Catches asynchronous promise rejections (e.g. database errors) that are not handled
 process.on('unhandledRejection', (err) => {
   console.error('[CRITICAL] Unhandled Rejection! Shutting down gracefully...');
   console.error(err.name, err.message, err.stack);
-  // Close the server first to stop accepting new requests, then exit
-  server.close(() => {
+  // Close the server first to stop accepting new requests, then exit.
+  if (server) {
+    server.close(() => process.exit(1));
+  } else {
     process.exit(1);
-  });
+  }
 });
 
 // 5) HANDLE SYSTEM TERMINATION SIGNALS
 process.on('SIGTERM', () => {
   console.log('[System] SIGTERM received. Shutting down gracefully...');
-  server.close(() => {
-    console.log('[System] Process terminated.');
-  });
+  if (server) {
+    server.close(() => console.log('[System] Process terminated.'));
+  }
 });
 
 process.on('SIGINT', () => {
   console.log('[System] SIGINT received. Shutting down gracefully...');
-  server.close(() => {
-    console.log('[System] Process terminated.');
+  if (server) {
+    server.close(() => {
+      console.log('[System] Process terminated.');
+      process.exit(0);
+    });
+  } else {
     process.exit(0);
-  });
+  }
 });
