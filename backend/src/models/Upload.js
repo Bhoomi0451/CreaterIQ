@@ -30,6 +30,10 @@ const uploadSchema = new mongoose.Schema(
       type: String,
       default: '',
     },
+    mediaUrl: {
+      type: String,
+      default: '',
+    },
     thumbnailUrl: {
       type: String,
       default: '',

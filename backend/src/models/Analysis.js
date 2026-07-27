@@ -57,6 +57,42 @@ const analysisSchema = new mongoose.Schema(
       type: [String],
       default: [],
     },
+    betterCaption: {
+      type: String,
+      default: '',
+    },
+    viralTitleSuggestions: {
+      type: [String],
+      default: [],
+    },
+    suggestedHashtags: {
+      type: [String],
+      default: [],
+    },
+    bestPostingTime: {
+      type: String,
+      default: '',
+    },
+    targetAudience: {
+      type: String,
+      default: '',
+    },
+    contentCategory: {
+      type: String,
+      default: '',
+    },
+    strengths: {
+      type: [String],
+      default: [],
+    },
+    weaknesses: {
+      type: [String],
+      default: [],
+    },
+    bestPlatforms: {
+      type: [String],
+      default: [],
+    },
   },
   {
     timestamps: true,

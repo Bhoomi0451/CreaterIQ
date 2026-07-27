@@ -12,12 +12,19 @@ import api from "../services/api";
 const Upload = () => {
   const navigate = useNavigate();
   const [selectedFile, setSelectedFile] = useState(null);
+  const [title, setTitle] = useState("");
+  const [description, setDescription] = useState("");
+  const [caption, setCaption] = useState("");
+  const [script, setScript] = useState("");
   const [uploading, setUploading] = useState(false);
   const [error, setError] = useState("");
 
   // Select File
   const handleFileSelect = (file) => {
     setSelectedFile(file);
+    if (!title && file) {
+      setTitle(file.name.replace(/\.[^/.]+$/, ""));
+    }
     setError("");
   };
 
@@ -29,8 +36,20 @@ const Upload = () => {
 
   // Upload File & Trigger AI Analysis
   const handleUpload = async () => {
+    if (!title.trim()) {
+      setError("Please enter a title for the content.");
+      return;
+    }
+    if (!description.trim()) {
+      setError("Please enter a description of the content.");
+      return;
+    }
+    if (!caption.trim()) {
+      setError("Please enter a caption for the post.");
+      return;
+    }
     if (!selectedFile) {
-      setError("Please select a file first.");
+      setError("Please upload a media file (image or video) first.");
       return;
     }
 
@@ -44,11 +63,19 @@ const Upload = () => {
         ? "audio"
         : "video";
 
-      // 1) Post upload metadata to backend
-      const uploadRes = await api.post("/api/uploads", {
-        title: selectedFile.name,
-        contentType: contentType,
-        status: "pending",
+      const formData = new FormData();
+      formData.append("title", title);
+      formData.append("description", description);
+      formData.append("caption", caption);
+      formData.append("script", script);
+      formData.append("contentType", contentType);
+      formData.append("file", selectedFile);
+
+      // 1) Post upload to backend
+      const uploadRes = await api.post("/api/uploads", formData, {
+        headers: {
+          "Content-Type": "multipart/form-data",
+        },
       });
 
       const upload = uploadRes.data?.data?.upload;
@@ -97,35 +124,96 @@ const Upload = () => {
         </div>
       )}
 
-      {/* Upload Box */}
+      {/* Upload Box / File Preview */}
 
-      <UploadBox
-        onFileSelect={handleFileSelect}
-      />
-
-      {/* File Preview */}
-
-      {selectedFile && (
+      {!selectedFile ? (
+        <UploadBox
+          onFileSelect={handleFileSelect}
+        />
+      ) : (
         <FilePreview
           file={selectedFile}
           onRemove={handleRemove}
         />
       )}
 
+      {/* Content Form Details */}
+      <div className="bg-white rounded-3xl shadow-lg border border-gray-100 p-8 space-y-6">
+        <h2 className="text-2xl font-bold text-gray-800 flex items-center gap-2">
+          📝 Content Details
+        </h2>
+
+        <div className="space-y-5">
+          <div>
+            <label className="block text-sm font-semibold text-gray-700 mb-2">
+              Title <span className="text-red-500">*</span>
+            </label>
+            <input
+              type="text"
+              value={title}
+              onChange={(e) => setTitle(e.target.value)}
+              placeholder="e.g. 5 Coding Tips for Beginners"
+              className="w-full px-4 py-3 rounded-xl border border-gray-200 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent transition"
+            />
+          </div>
+
+          <div className="grid md:grid-cols-2 gap-6">
+            <div>
+              <label className="block text-sm font-semibold text-gray-700 mb-2">
+                Description <span className="text-red-500">*</span>
+              </label>
+              <textarea
+                value={description}
+                onChange={(e) => setDescription(e.target.value)}
+                placeholder="Provide a detailed description of what the content is about..."
+                rows={4}
+                className="w-full px-4 py-3 rounded-xl border border-gray-200 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent transition resize-none"
+              />
+            </div>
+
+            <div>
+              <label className="block text-sm font-semibold text-gray-700 mb-2">
+                Caption <span className="text-red-500">*</span>
+              </label>
+              <textarea
+                value={caption}
+                onChange={(e) => setCaption(e.target.value)}
+                placeholder="Write the post caption / copy..."
+                rows={4}
+                className="w-full px-4 py-3 rounded-xl border border-gray-200 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent transition resize-none"
+              />
+            </div>
+          </div>
+
+          <div>
+            <label className="block text-sm font-semibold text-gray-700 mb-2 flex items-center justify-between">
+              <span>Script <span className="text-gray-400 font-normal">(Optional)</span></span>
+              <span className="text-xs text-gray-400 font-normal">Helps with transcript and speech pacing analysis</span>
+            </label>
+            <textarea
+              value={script}
+              onChange={(e) => setScript(e.target.value)}
+              placeholder="Paste the full video script or voiceover transcript here..."
+              rows={4}
+              className="w-full px-4 py-3 rounded-xl border border-gray-200 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent transition"
+            />
+          </div>
+        </div>
+      </div>
+
       {/* Analyze Button */}
 
-      {selectedFile && (
-        <div className="flex justify-center">
+      <div className="flex justify-center">
 
-          <button
-            onClick={handleUpload}
-            className="px-10 py-4 rounded-2xl bg-gradient-to-r from-blue-600 to-purple-600 text-white font-semibold text-lg shadow-lg hover:scale-105 transition duration-300 cursor-pointer"
-          >
-            🤖 Analyze with AI
-          </button>
+        <button
+          onClick={handleUpload}
+          disabled={uploading}
+          className="px-10 py-4 rounded-2xl bg-gradient-to-r from-blue-600 to-purple-600 text-white font-semibold text-lg shadow-lg hover:scale-105 transition duration-300 cursor-pointer disabled:opacity-50 disabled:cursor-not-allowed"
+        >
+          {uploading ? "🤖 Uploading & Analyzing..." : "🤖 Analyze with AI"}
+        </button>
 
-        </div>
-      )}
+      </div>
 
       {/* Loader */}
 

@@ -169,6 +169,142 @@ const Analysis = () => {
         score={analysis.overallScore} 
       />
 
+      {/* Consultant Insights Section */}
+      <div className="grid grid-cols-1 md:grid-cols-2 gap-8">
+        
+        {/* Niche & Audience Profile */}
+        <div className="bg-white rounded-3xl shadow-lg border border-gray-100 p-8 space-y-6">
+          <h3 className="text-2xl font-bold text-gray-800 border-b pb-4">
+            🎯 Niche & Audience Profile
+          </h3>
+          <div className="space-y-4">
+            <div>
+              <span className="text-xs font-semibold uppercase tracking-wider text-gray-400">Content Category</span>
+              <p className="text-lg font-bold text-blue-600 mt-0.5">{analysis.contentCategory || "N/A"}</p>
+            </div>
+            <div>
+              <span className="text-xs font-semibold uppercase tracking-wider text-gray-400">Target Audience</span>
+              <p className="text-gray-700 font-medium mt-0.5">{analysis.targetAudience || "N/A"}</p>
+            </div>
+            <div>
+              <span className="text-xs font-semibold uppercase tracking-wider text-gray-400">Optimal Posting Time</span>
+              <p className="text-gray-700 font-medium mt-0.5 flex items-center gap-2">
+                ⏰ {analysis.bestPostingTime || "N/A"}
+              </p>
+            </div>
+          </div>
+        </div>
+
+        {/* Viral Title Suggestions */}
+        <div className="bg-white rounded-3xl shadow-lg border border-gray-100 p-8 space-y-6">
+          <h3 className="text-2xl font-bold text-gray-800 border-b pb-4">
+            🔥 Viral Title Alternatives
+          </h3>
+          <ul className="space-y-3">
+            {analysis.viralTitleSuggestions && analysis.viralTitleSuggestions.length > 0 ? (
+              analysis.viralTitleSuggestions.map((title, idx) => (
+                <li key={idx} className="flex items-start gap-3 bg-blue-50/50 p-3 rounded-xl border border-blue-100/50">
+                  <span className="flex-shrink-0 w-6 h-6 rounded-full bg-blue-600 text-white font-bold text-xs flex items-center justify-center">
+                    {idx + 1}
+                  </span>
+                  <span className="text-gray-800 font-medium">{title}</span>
+                </li>
+              ))
+            ) : (
+              <li className="text-gray-500 italic">No viral titles generated.</li>
+            )}
+          </ul>
+        </div>
+      </div>
+
+      {/* Strengths & Weaknesses */}
+      <div className="grid grid-cols-1 md:grid-cols-2 gap-8">
+        
+        {/* Strengths */}
+        <div className="bg-emerald-50/55 rounded-3xl shadow-lg border border-emerald-100 p-8 space-y-5">
+          <h3 className="text-2xl font-bold text-emerald-800 flex items-center gap-2">
+            ✅ Key Strengths
+          </h3>
+          <ul className="space-y-2.5">
+            {analysis.strengths && analysis.strengths.length > 0 ? (
+              analysis.strengths.map((str, idx) => (
+                <li key={idx} className="flex gap-2 text-emerald-700 font-medium items-start">
+                  <span className="text-emerald-500 mt-1">•</span>
+                  <span>{str}</span>
+                </li>
+              ))
+            ) : (
+              <li className="text-emerald-500 italic">No strengths listed.</li>
+            )}
+          </ul>
+        </div>
+
+        {/* Weaknesses */}
+        <div className="bg-rose-50/55 rounded-3xl shadow-lg border border-rose-100 p-8 space-y-5">
+          <h3 className="text-2xl font-bold text-rose-800 flex items-center gap-2">
+            ⚠️ Content Gaps / Weaknesses
+          </h3>
+          <ul className="space-y-2.5">
+            {analysis.weaknesses && analysis.weaknesses.length > 0 ? (
+              analysis.weaknesses.map((weak, idx) => (
+                <li key={idx} className="flex gap-2 text-rose-700 font-medium items-start">
+                  <span className="text-rose-500 mt-1">•</span>
+                  <span>{weak}</span>
+                </li>
+              ))
+            ) : (
+              <li className="text-rose-500 italic">No weaknesses listed.</li>
+            )}
+          </ul>
+        </div>
+      </div>
+
+      {/* Optimized Caption Copy Box */}
+      <div className="bg-white rounded-3xl shadow-lg border border-gray-100 p-8 space-y-6">
+        <div className="flex flex-col sm:flex-row justify-between sm:items-center gap-4 border-b pb-4">
+          <div>
+            <h3 className="text-2xl font-bold text-gray-800">
+              💡 Upgraded Post Caption
+            </h3>
+            <p className="text-gray-500 text-sm mt-0.5">High-converting caption optimized by Creator AI</p>
+          </div>
+          <button
+            onClick={() => {
+              navigator.clipboard.writeText(analysis.betterCaption || "");
+              alert("Caption copied to clipboard! 📋");
+            }}
+            className="self-start bg-blue-600 text-white font-semibold px-5 py-2.5 rounded-xl hover:bg-blue-700 transition cursor-pointer text-sm shadow flex items-center gap-2"
+          >
+            Copy Caption
+          </button>
+        </div>
+        
+        {analysis.betterCaption ? (
+          <div className="bg-slate-50 border border-gray-200 rounded-2xl p-5 whitespace-pre-wrap text-gray-700 leading-relaxed font-mono text-sm max-h-[300px] overflow-y-auto">
+            {analysis.betterCaption}
+          </div>
+        ) : (
+          <p className="text-gray-500 italic">No custom caption generated.</p>
+        )}
+
+        {/* Suggested Hashtags */}
+        {analysis.suggestedHashtags && analysis.suggestedHashtags.length > 0 && (
+          <div className="space-y-2 pt-4 border-t">
+            <span className="text-xs font-semibold uppercase tracking-wider text-gray-400">Suggested Hashtags</span>
+            <div className="flex flex-wrap gap-2">
+              {analysis.suggestedHashtags.map((tag, idx) => (
+                <span
+                  key={idx}
+                  className="bg-blue-50 text-blue-600 border border-blue-100 font-semibold px-3 py-1.5 rounded-xl text-xs"
+                >
+                  {tag.startsWith("#") ? tag : `#${tag}`}
+                </span>
+              ))}
+            </div>
+          </div>
+        )}
+      </div>
+
     </motion.div>
   );
 };

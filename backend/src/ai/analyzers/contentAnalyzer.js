@@ -10,15 +10,19 @@ import AppError from '../../utils/appError.js';
 const getMockAnalysis = (upload) => {
   const contentType = upload.contentType || 'video';
   const title = upload.title || 'Untitled Content';
+  const desc = upload.description || '';
+  const capt = upload.caption || '';
 
-  // Seed somewhat random scores in the 70-95 range
-  const randomScore = (min = 70, max = 95) => Math.floor(Math.random() * (max - min + 1)) + min;
+  // Calculate deterministic scores based on the text inputs to avoid pure random and keep it content-based
+  const titleHash = title.split('').reduce((acc, char) => acc + char.charCodeAt(0), 0);
+  const descHash = desc.split('').reduce((acc, char) => acc + char.charCodeAt(0), 0);
+  const captHash = capt.split('').reduce((acc, char) => acc + char.charCodeAt(0), 0);
 
-  const hookScore = randomScore(75, 95);
-  const storytellingScore = randomScore(70, 92);
-  const captionScore = randomScore(72, 90);
-  const thumbnailScore = randomScore(70, 95);
-  const viralityScore = randomScore(75, 94);
+  const hookScore = 65 + (titleHash % 31);
+  const storytellingScore = 60 + ((descHash + titleHash) % 36);
+  const captionScore = 70 + (captHash % 26);
+  const thumbnailScore = 65 + ((titleHash + captHash) % 31);
+  const viralityScore = 60 + ((titleHash * 2 + descHash) % 36);
 
   const platformMap = {
     video: ['TikTok', 'YouTube Shorts', 'Instagram Reels'],
@@ -36,14 +40,27 @@ const getMockAnalysis = (upload) => {
     captionScore,
     thumbnailScore,
     viralityScore,
-    engagementPrediction: `Based on the content topic "${title}", this ${contentType} is predicted to capture initial user attention effectively with a hook score of ${hookScore}%. The subject matter appeals directly to target audience interests, indicating strong retention potential and standard distribution patterns across ${platforms.join(' and ')}.`,
+    engagementPrediction: `Based on your ${contentType} titled "${title}", this content shows great potential. With a hook score of ${hookScore}%, it is poised to capture interest within the first few seconds. Retaining audience attention will depend on executing the planned visual cuts.`,
     platformRecommendation: platforms,
+    bestPlatforms: platforms,
     improvementSuggestions: [
-      `Enhance the opening visual or verbal hook to increase viewer retention within the first 3 seconds.`,
-      `Add dynamic subtitles or captions to make the content accessible to silent viewers.`,
-      `Improve lighting and audio clarity to boost production value.`,
-      `Incorporate a clear, single call-to-action (CTA) at the end of the content.`
+      `Format the script to highlight key takeaways within the first 5 seconds.`,
+      `Add dynamic caption overlays matching the style of modern short-form content.`,
+      `Optimize the title structure to appeal to high-intent searches.`,
+      `Implement a clear call-to-action pointing to your creator profile.`
     ],
+    betterCaption: `${capt || 'Check this out!'} 🚀\n\nFollow for more daily content! #creators`,
+    viralTitleSuggestions: [
+      `The Ultimate Guide to ${title}`,
+      `Why nobody is talking about ${title}`,
+      `I tried analyzing ${title} (Here is what happened)`
+    ],
+    suggestedHashtags: ['#creatoriq', `#${contentType}`, '#viral', '#trending'],
+    bestPostingTime: 'Wednesday, 6:00 PM - 8:00 PM',
+    targetAudience: 'Content creators, digital marketers, and tech enthusiasts',
+    contentCategory: 'Professional & Business Niche',
+    strengths: ['Strong keyword utilization in title', 'Clear focus on content style'],
+    weaknesses: ['Call to action could be more descriptive', 'Visual cues in script are not defined']
   };
 };
 
@@ -79,6 +96,41 @@ const parseSafeJson = (rawContent) => {
 };
 
 /**
+ * Generates an image description using a vision model if Groq is available.
+ * @param {string} imageUrl - URL of the image
+ * @param {Object} groq - Groq SDK instance
+ * @returns {Promise<string>} Detailed image description
+ */
+const getImageDescription = async (imageUrl, groq) => {
+  try {
+    console.log('[Groq Vision] Requesting image description for visual analysis...');
+    const response = await groq.chat.completions.create({
+      model: 'llama-3.2-11b-vision-preview',
+      messages: [
+        {
+          role: 'user',
+          content: [
+            { type: 'text', text: 'Describe this image in detail, focusing on its visual style, subjects, colors, composition, and text overlays if any, suitable for a content creator analysis.' },
+            {
+              type: 'image_url',
+              image_url: {
+                url: imageUrl
+              }
+            }
+          ]
+        }
+      ],
+      temperature: 0.2,
+      max_tokens: 512,
+    });
+    return response.choices?.[0]?.message?.content || 'Image understanding is unavailable.';
+  } catch (error) {
+    console.error('[Vision Model Error]', error.message || error);
+    return 'Image understanding is unavailable.';
+  }
+};
+
+/**
  * Analyzes content by calling the Groq API using the official Groq SDK.
  * @param {Object} upload - The upload document to analyze
  * @returns {Promise<Object>} Analyzed metrics and texts
@@ -93,8 +145,6 @@ export const analyzeContent = async (upload) => {
     return getMockAnalysis(upload);
   }
 
-  const promptText = getContentAnalysisPrompt(upload);
-
   let groq;
   try {
     groq = new Groq({ apiKey });
@@ -102,6 +152,14 @@ export const analyzeContent = async (upload) => {
     console.error('[Groq] Error during SDK initialization:', initErr.message);
     throw new AppError('AI SDK failed to initialize. Please check your system configuration.', 500);
   }
+
+  // Generate image description if content is image
+  let imageDescription = '';
+  if (upload.contentType === 'image' && upload.mediaUrl) {
+    imageDescription = await getImageDescription(upload.mediaUrl, groq);
+  }
+
+  const promptText = getContentAnalysisPrompt(upload, imageDescription);
 
   let attempts = 0;
   const maxAttempts = 3;
@@ -168,6 +226,8 @@ export const analyzeContent = async (upload) => {
   };
 
   const data = parsedJson || {};
+  const bestPlatforms = Array.isArray(data.bestPlatforms) ? data.bestPlatforms : (Array.isArray(data.platformRecommendation) ? data.platformRecommendation : []);
+
   return {
     hookScore: clamp(data.hookScore, 0),
     storytellingScore: clamp(data.storytellingScore, 0),
@@ -175,7 +235,16 @@ export const analyzeContent = async (upload) => {
     thumbnailScore: clamp(data.thumbnailScore, 0),
     viralityScore: clamp(data.viralityScore, 0),
     engagementPrediction: data.engagementPrediction || '',
-    platformRecommendation: Array.isArray(data.platformRecommendation) ? data.platformRecommendation : [],
+    bestPlatforms: bestPlatforms,
+    platformRecommendation: bestPlatforms, // for backwards compatibility
     improvementSuggestions: Array.isArray(data.improvementSuggestions) ? data.improvementSuggestions : [],
+    betterCaption: data.betterCaption || '',
+    viralTitleSuggestions: Array.isArray(data.viralTitleSuggestions) ? data.viralTitleSuggestions : [],
+    suggestedHashtags: Array.isArray(data.suggestedHashtags) ? data.suggestedHashtags : [],
+    bestPostingTime: data.bestPostingTime || '',
+    targetAudience: data.targetAudience || '',
+    contentCategory: data.contentCategory || '',
+    strengths: Array.isArray(data.strengths) ? data.strengths : [],
+    weaknesses: Array.isArray(data.weaknesses) ? data.weaknesses : [],
   };
 };

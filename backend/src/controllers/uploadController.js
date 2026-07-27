@@ -8,7 +8,7 @@ import { createNotification } from '../services/notificationService.js';
 export const createUpload = async (req, res, next) => {
   try {
     const userId = req.user.id;
-    const upload = await uploadService.createUpload(userId, req.body);
+    const upload = await uploadService.createUpload(userId, req.body, req.file, req);
 
     // Trigger upload completed notification
     await createNotification(userId, 'upload', `Successfully uploaded content: "${upload.title}".`);

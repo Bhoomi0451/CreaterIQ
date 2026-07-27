@@ -5,14 +5,29 @@ import AppError from '../utils/appError.js';
  * Middleware validator for creating an upload.
  */
 export const validateCreateUpload = (req, res, next) => {
-  const { title, contentType, status } = req.body;
+  const { title, description, caption, contentType, status } = req.body;
 
   // 1) Validate Title (required, string, non-empty)
   if (!title || typeof title !== 'string' || title.trim() === '') {
     return next(new AppError('Please provide a valid title for the upload.', 400));
   }
 
-  // 2) Validate Content Type (optional, must be valid enum if provided)
+  // 2) Validate Description (required, string, non-empty)
+  if (!description || typeof description !== 'string' || description.trim() === '') {
+    return next(new AppError('Please provide a valid description for the upload.', 400));
+  }
+
+  // 3) Validate Caption (required, string, non-empty)
+  if (!caption || typeof caption !== 'string' || caption.trim() === '') {
+    return next(new AppError('Please provide a valid caption for the upload.', 400));
+  }
+
+  // 4) Validate Media File (required)
+  if (!req.file) {
+    return next(new AppError('Please upload an image or video file.', 400));
+  }
+
+  // 5) Validate Content Type (optional, must be valid enum if provided)
   if (contentType !== undefined) {
     const validContentTypes = ['video', 'script', 'audio', 'image', 'other'];
     if (!validContentTypes.includes(contentType)) {
@@ -25,7 +40,7 @@ export const validateCreateUpload = (req, res, next) => {
     }
   }
 
-  // 3) Validate Status (optional, must be valid enum if provided)
+  // 6) Validate Status (optional, must be valid enum if provided)
   if (status !== undefined) {
     const validStatuses = ['draft', 'pending', 'processing', 'completed', 'failed'];
     if (!validStatuses.includes(status)) {
