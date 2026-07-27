@@ -35,7 +35,7 @@ app.use(express.json({ limit: '10kb' }));
 app.use(express.urlencoded({ extended: true, limit: '10kb' }));
 
 // Serve local uploaded files statically
-app.use('/uploads', express.static(path.join(process.cwd(), 'src/uploads')));
+app.use('/uploads', express.static(path.resolve(process.cwd(), 'src/uploads')));
 
 // 2) ROUTES
 
@@ -76,7 +76,7 @@ app.use('/api/notifications', notificationRoutes);
 
 // 3) UNHANDLED ROUTE HANDLING
 // Fallback for any routes not matched by the routers above
-app.all(/.*/, (req, res, next) => {
+app.use((req, res, next) => {
   next(new AppError(`Can't find ${req.originalUrl} on this server!`, 404));
 });
 

@@ -14,7 +14,7 @@ import {
 } from '../validators/uploadValidator.js';
 import { protect } from '../middleware/authMiddleware.js';
 
-const uploadDir = 'src/uploads/';
+const uploadDir = path.resolve(process.cwd(), 'src/uploads');
 if (!fs.existsSync(uploadDir)) {
   fs.mkdirSync(uploadDir, { recursive: true });
 }

@@ -21,8 +21,9 @@ const startServer = async () => {
     await connectDB();
 
     const PORT = process.env.PORT || 5000;
-    server = app.listen(PORT, () => {
-      console.log(`[Server] Listening on Port ${PORT} in ${process.env.NODE_ENV || 'production'} mode`);
+    const HOST = '0.0.0.0';
+    server = app.listen(PORT, HOST, () => {
+      console.log(`[Server] Listening on ${HOST}:${PORT} in ${process.env.NODE_ENV || 'production'} mode`);
     });
   } catch (error) {
     console.error('[CRITICAL] Database connection failed. Server was not started.');
